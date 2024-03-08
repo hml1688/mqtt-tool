@@ -32,7 +32,7 @@ jobs:
       - name: Install Flutter               # Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          channel: 'main'
 
       - name: Get Flutter dependencies      # Get the Libraries and Dependencies
         run: flutter pub get
