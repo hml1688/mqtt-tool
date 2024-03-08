@@ -34,8 +34,8 @@ jobs:
 
       - name: Get pubspec version
         run: |
-        version=$(yq .version pubspec.yaml)
-        echo "##v$version"  # This line outputs the version for debugging (optional)
+          version=$(yq .version pubspec.yaml)
+          echo "##v$version"  # This line outputs the version for debugging (optional)
   
       - name: Create git tag
         run: |
