@@ -14,10 +14,11 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3     # Checkout the Repository on the Virtual Machine
 
-      - name: Set up JDK 11           # Setup JAVA to build the Android APK for us
+      - name: Set up JDK              # Setup JAVA to build the Android APK for us
         uses: actions/setup-java@v3
         with:
           java-version: '12.x'
+          distribution: temurin
 
       #  Decode keystore File from repository secrets
       #  Keep the keystore file private; don’t check it into public source control!
