@@ -29,16 +29,17 @@ jobs:
       #- name: Decode android/key.properties
       #  run: echo "${{ secrets.KEY_PROPERTIES_PROD }}" | base64 --decode > android/key.properties
 
-      - uses: olegtarasov/get-tag@v2 # that generate $GIT_TAG_NAME env
-        id: tagName
-        with:
-          tagRegex: 'internal-v([0-9]+.[0-9]+.[0-9]+\+[0-9]+)' # Optional. Returns specified group text as tag name. Full tag string is returned if regex is not defined.
-          tagRegexGroup: 1 # Optional. Default is 1.
+      - name: Install yq
+        uses: shivammathur/setup-yq@v1
 
-      - name: Replace YAML version with tag version
+      - name: Get pubspec version
         run: |
-          sed -i 's/99.99.99+99/'$GIT_TAG_NAME'/g' pubspec.yaml|
-          echo "Tag used version:"$GIT_TAG_NAME
+        version=$(yq .version pubspec.yaml)
+        echo "##v$version"  # This line outputs the version for debugging (optional)
+  
+      - name: Create git tag
+        run: |
+          git tag "v$version"
 
       - name: Install Flutter               # Install Flutter
         uses: subosito/flutter-action@v2
