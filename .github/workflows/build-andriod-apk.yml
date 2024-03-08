@@ -30,7 +30,7 @@ jobs:
       #  run: echo "${{ secrets.KEY_PROPERTIES_PROD }}" | base64 --decode > android/key.properties
 
       - name: Install yq
-        uses: uses: mikefarah/yq@v4.42.1
+        uses: mikefarah/yq@v4.42.1
 
       - name: Get pubspec version
         run: |
