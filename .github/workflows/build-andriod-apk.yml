@@ -42,7 +42,7 @@ jobs:
   
       - name: Create git tag
         run: |
-          git tag "v${{ steps.get_flutter_app_version.outputs.VERSION }}"
+          git tag "v${{ steps.get_flutter_app_version.outputs.version }}"
 
       - name: Install Flutter               # Install Flutter
         uses: subosito/flutter-action@v2
