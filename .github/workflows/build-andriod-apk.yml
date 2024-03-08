@@ -1,0 +1,89 @@
+name: Flutter Build and Upload Android APK
+
+on:
+  push:                 # This is the condition that the action will run on
+    branches: [ main ]  # In this case when you push your code into GitHub
+  tags:
+    - "v*.*.*"          # In this case when you tag your commit with v1.0.0 for example
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # This is the type of machine we want to run the action on
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3     # Checkout the Repository on the Virtual Machine
+
+      - name: Set up JDK 11           # Setup JAVA to build the Android APK for us
+        uses: actions/setup-java@v3
+        with:
+          java-version: '12.x'
+
+      #  Decode keystore File from repository secrets
+      #  Keep the keystore file private; don’t check it into public source control!
+      
+      #- name: Decode KeyStore File (.jks)            
+      #  run: echo "${{ secrets.KEYSTORE_JKS_PROD }}" | base64 --decode > android/keystore.jks
+
+      #- name: Decode android/key.properties
+      #  run: echo "${{ secrets.KEY_PROPERTIES_PROD }}" | base64 --decode > android/key.properties
+
+      - name: Install Flutter               # Install Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+
+      - name: Get Flutter dependencies      # Get the Libraries and Dependencies
+        run: flutter pub get
+
+      - name: Build APK (release mode)      #  Build a release
+        run: flutter build apk --release
+
+      - name: Build an APPBUNDLE
+        run: flutter build appbundle --release
+
+      - name: Save APK to Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: flutter-apk
+          path: build/app/outputs/flutter-apk/*.apk
+
+      - name: Save APPBUNDLE to Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: APPBUNDLE
+          path: build/app/outputs/bundle/release/*.aab
+
+      - name: Create Github Release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/app/outputs/bundle/release/*.aab,build/app/outputs/flutter-apk/*.apk"
+          # token: ${{ secrets.PERSONAL_RELEASE_TOKEN }}
+
+  # TODO:  Upload to Firebase - for App Distribution
+  # Release job, upload the ipa to Firebase App Distribution
+  # release:
+  #   name: Release APK to Firebase
+  #   needs: [ build ]
+  #   runs-on: ubuntu-latest
+  #   steps:
+    
+  #   # Retrieve ipa file from GitHub artifacts
+  #   - uses: actions/checkout@v3
+  #   - name: Get flutter-apk from artifacts
+  #     uses: actions/download-artifact@v3
+  #     with:
+  #       name: flutter-apk
+  #  OR
+  #       name: APPBUNDLE
+
+  #   # Upload ipa file to Firebase
+  #   - name: Upload artifact to Firebase App Distribution
+  #     uses: wzieba/Firebase-Distribution-Github-Action@v1
+  #     with:
+  #       appId: ${{secrets.FIREBASE_IOS_APP_ID}}
+  #       serviceCredentialsFileContent: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
+  #       groups: ios-developers
+  #       file: ${{secrets.APP_NAME}}.apk
+  #  OR
+  #       file: ${{secrets.APP_NAME}}.aab
