@@ -36,12 +36,12 @@ jobs:
 
       - name: Get pubspec version
         run: |
-          version=$(yq .version | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' pubspec.yaml)
+          version=$(yq .version | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' pubspec.yaml | head -n 1)
           echo "## v$version"  # This line outputs the version for debugging (optional)
   
       - name: Create git tag
         run: |
-          git tag "v$version"
+          git tag "v${version}"
 
       - name: Install Flutter               # Install Flutter
         uses: subosito/flutter-action@v2
@@ -73,7 +73,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "build/app/outputs/bundle/release/*.aab,build/app/outputs/flutter-apk/*.apk"
-          tag: "v$version"
+          tag: "v${version}"
           # token: ${{ secrets.PERSONAL_RELEASE_TOKEN }}
 
   # TODO:  Upload to Firebase - for App Distribution
