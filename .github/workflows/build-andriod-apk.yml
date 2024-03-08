@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest  # This is the type of machine we want to run the action on
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout repository
@@ -49,10 +51,10 @@ jobs:
       - name: Get Flutter dependencies      # Get the Libraries and Dependencies
         run: flutter pub get
 
-      - name: Build APK (release mode)      #  Build a release
+      - name: Build APK Release             # Build a release
         run: flutter build apk --release
 
-      - name: Build an APPBUNDLE
+      - name: Build an AppBundle            # App Bundles are useful for Google Play Store
         run: flutter build appbundle --release
 
       - name: Save APK to Artifacts
