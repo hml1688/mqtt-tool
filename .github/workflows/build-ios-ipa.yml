@@ -1,6 +1,4 @@
 name: Flutter Build and Upload iOS ipa
-
-name: "[DEV] Build and Publish iOS"
 on: workflow_dispatch
     
 jobs:

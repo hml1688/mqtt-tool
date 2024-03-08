@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '21'
-          distribution: temurin
+          distribution: microsoft
 
       #  Decode keystore File from repository secrets
       #  Keep the keystore file private; don’t check it into public source control!
