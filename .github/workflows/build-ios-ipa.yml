@@ -37,10 +37,23 @@ jobs:
           mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
           cp $PP_PATH ~/Library/MobileDevice/Provisioning\ Profiles  
 
+      - name: Install yq
+        uses: mikefarah/yq@v4.42.1
+
+      - name: Get pubspec version
+        id: get_flutter_app_version
+        run: |
+          VERSION=$(yq .version | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+' pubspec.yaml | head -n 1)
+          echo "TAG_VERSION=$VERSION" >> $GITHUB_OUTPUT
+  
+      - name: Create git tag
+        run: |
+          git tag "v${{ steps.get_flutter_app_version.outputs.TAG_VERSION }}"
+
       - name: Install Flutter               # Install Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          channel: 'main'
 
       - name: Get Flutter dependencies      # Get the Libraries and Dependencies
         run: flutter pub get
@@ -58,6 +71,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           artifacts: "build/ios/ipa/*.ipa"
+          tag: "v${{ steps.get_flutter_app_version.outputs.TAG_VERSION }}-ios"
 
       # Important! Cleanup: remove the certificate and provisioning profile from the GitHub Machine [Runner]!
       - name: Clean up keychain and provisioning profile
